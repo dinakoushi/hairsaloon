@@ -1,0 +1,20 @@
+.profileModal {
+    display: flex;
+    flex-direction: column;
+}
+
+.btnprofile {
+    background-color: black;
+    color: white;
+    padding: 12px 20px;
+    margin-top: 10px;
+    margin-bottom: 5px;
+    border: none;
+    cursor: pointer;
+    width: 90%;
+    border-radius: 10px;
+}
+
+    .btnprofile:hover {
+        opacity: 0.8;
+    }

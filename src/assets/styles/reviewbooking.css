@@ -1,0 +1,46 @@
+.container {
+    padding: 20px;
+}
+
+.appointment-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.appointment-item {
+    padding: 10px;
+    border-radius: 5px;
+    width: 950px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.actions {
+    display: flex;
+    gap: 10px;
+}
+.actions button {
+    margin-left: 10px;
+    background-color: black;
+    color: white;
+    border-radius: 10px;    
+    font-size: smaller;
+    font-family: monospace;
+}
+.actions button:hover {
+    background-color: #495057;
+}
+
+.detailsBooked {
+    background: linear-gradient(to right, #c1ac2ee6, #c1ac2e73);
+    padding: 10px;
+    width: 700px;
+    border-radius: 10px;
+    border-style: outset;
+    margin: auto;
+    font-size: smaller;
+    font-family: monospace;
+}

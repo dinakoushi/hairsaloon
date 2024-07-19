@@ -1,0 +1,190 @@
+#root {
+    margin: 0 auto;
+    padding: 0.5rem;
+    text-align: center;
+    min-width: 320px;
+    min-height: 90vh;
+}
+
+.logo {
+    height: 6em;
+    padding: 1.5em;
+    will-change: filter;
+    transition: filter 300ms;
+}
+
+    .logo:hover {
+        filter: drop-shadow(0 0 2em #646cffaa);
+    }
+
+    .logo.react:hover {
+        filter: drop-shadow(0 0 2em #61dafbaa);
+    }
+
+@keyframes logo-spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    a:nth-of-type(2) .logo {
+        animation: logo-spin infinite 20s linear;
+    }
+}
+
+.card {
+    padding: 2em;
+}
+
+.read-the-docs {
+    color: #888;
+}
+
+.header {
+    overflow: hidden;
+    background-color: black;
+    padding: 5px 10px;
+    opacity: 0.5;
+    height: 65px;
+}
+/*body {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+*/
+.title {
+    text-align: center;
+    border-radius: 10px 10px 0 0;
+    font-size: 1.5rem;
+    font-weight: bold;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+.App {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+    width: 30vw;
+    padding: 2vw 1vw;
+    background-color: rgb(250, 194, 194);
+    border-radius: 0 0 10px 10px;
+}
+
+input {
+    border: 1px solid rgb(172, 171, 171);
+    border-radius: 10px;
+    padding: 1vw 1vw;
+    outline: none;
+    margin: 5px;
+}
+
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: black;
+}
+
+li {
+    float: right;
+}
+
+    li a {
+        display: block;
+        color: white;
+        text-align: center;
+        padding: 14px 16px;
+        text-decoration: none;
+    }
+
+        li a:hover {
+            background-color: #111;
+        }
+
+.topLogo {
+    min-width: 200px;
+    margin: auto;
+    background: url(../images/HudaBeauty.jpg);
+    background-repeat: no-repeat;
+    min-height: 50px;
+    background-position: center;
+    float: left;
+    background-size: contain;
+}
+
+.loginScreen {
+    padding: 16px;
+}
+
+.loginForm {
+    border: 3px solid #f1f1f1;
+    background-color: whitesmoke;
+    width: 35%;
+    opacity: 85%;
+    margin: auto;
+    margin-top: 3%;
+}
+
+input[type=text], input[type=password] {
+    width: 90%;
+    padding: 12px 20px;
+    margin: 8px 5%;
+    display: inline-block;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+}
+
+.btnSubmit {
+    background-color: black;
+    color: white;
+    padding: 14px 20px;
+    margin: 12px 5%;
+    border: none;
+    cursor: pointer;
+    width: 90%;
+}
+
+    .btnSubmit:hover {
+        opacity: 0.8;
+    }
+
+.cancelbtn {
+    width: auto;
+    padding: 10px 18px;
+    background-color: #f44336;
+}
+
+span.psw {
+    float: right;
+    padding-top: 16px;
+}
+
+.lbl {
+    float: left;
+    width: 90%;
+    margin: 8px 5%;
+    text-align: left;
+}
+
+.inp {
+    float: left;
+    width: 100%;
+}
+
+.signup-Link {
+    color: #1a75ff;
+    padding-bottom: 20px;
+}
+
+.rgPage {
+    margin-top: unset !important;
+}

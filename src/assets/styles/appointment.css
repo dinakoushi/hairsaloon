@@ -1,0 +1,135 @@
+.app-container {
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 20px;
+    background-color: #ffffffd1;
+    height: 600px;
+    max-width: 1000px;
+    margin: 0 auto;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-top: 50px;
+}
+
+.calendar-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    font-family: monospace;
+    font-weight: bold;
+    flex: 1; /* Grow to take available space */
+    max-width: 50%; /* Ensure it doesn't grow too large */
+    flex-direction: column;
+    gap: 20px;
+}
+.timeslots-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    line-height: 0.5em;
+    height: 230px;
+    border-radius: 10px;
+    font-family: monospace;
+    padding-top:10px;
+}
+
+.timeslots-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.timeslot {
+    padding: 7px;
+    text-align: center;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    cursor: pointer;
+    background-color: #ffc107;
+    transition: background-color 0.3s;
+    font-size: small;
+    text-align: center;
+    border-bottom: groove;
+}
+
+.timeslot:hover {
+    background-color: #f0f0f0;
+}
+
+.selected {
+    background-color: #007bff;
+    color: white;
+}
+
+.timeslot:not(.selected):hover {
+    background-color: #e0e0e0;
+}
+
+.appointment-p {
+    font-family: monospace;
+    float: left;
+    font-size: large;
+    margin-bottom: 0 !important;
+}
+.booking-header {
+    margin-bottom: 20px;
+    font-family: monospace;
+    font-weight: 200;
+    width: 100%;
+}
+
+.form-container {
+    display: flex;
+    align-items: center;
+    justify-content: left;
+    margin-bottom: 20px;
+    font-family: monospace;
+    font-weight: bold;
+    flex: 1; /* Grow to take available space */
+    max-width: 50%; /* Ensure it doesn't grow too large */
+}
+.page-container {
+    display: flex;
+    justify-content: space-between; /* Distribute space between items */
+    align-items: flex-start; /* Align items to the start (top) */
+    gap: 20px; /* Adjust the gap between the two containers */
+}
+
+.select-Opt {
+    float: left;
+    width: 90%;
+    padding: 12px 20px;
+    margin: 8px 5%;
+    display: inline-block;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    border-radius: 10px;
+}
+
+.calendarStyle {
+    width: 300px !important;
+    line-height: 0.8em !important;
+    height: 250px !important;
+    border-radius: 10px;
+    font-family: monospace;
+}
+
+.available {
+    background-color: #d4edda; /* Light green for available */
+}
+
+.booked {
+    background-color: #f8d7da; /* Light red for booked */
+}
+
+.selected {
+    border: 2px solid #007bff; /* Blue border for selected */
+}
