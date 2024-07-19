@@ -47,7 +47,8 @@ const bookingSchema = new mongoose.Schema({
     serviceDesc: String,
     staffName: String,
     staffID: String,
-    time: String,
+    startTime: String,
+    endTime: String,
     bookedAt: { type: Date, default: Date.now },
     status: String,
 });
@@ -230,8 +231,13 @@ app.get('/bookedSlots', async (req, res) => {
         // Fetch all bookings for the specified date
         const appointments = await booking.find({ date: date, status: 'Approved' });
 
-        // Create an array of booked times
-        const bookedSlots = appointments.map(appointment => appointment.time);
+        // Create an array of booked slots with start time, end time, and hairstylists
+        const bookedSlots = appointments.map(appointment => ({
+            startTime: appointment.startTime,
+            endTime: appointment.endTime,
+            staffID: appointment.staffID,
+            date: appointment.date
+        }));
 
         res.json(bookedSlots);
     } catch (error) {
@@ -243,7 +249,7 @@ app.get('/bookedSlots', async (req, res) => {
 // Booking Route
 app.post("/book", async (req, res) => {
     try {
-        const { userId, date, serviceCode, serviceDesc, staffName, staffID, time, status } = req.body;
+        const { userId, date, serviceCode, serviceDesc, staffName, staffID, startTime, endTime, status } = req.body;
 
         const newBooking = new booking({
             userId,
@@ -252,7 +258,8 @@ app.post("/book", async (req, res) => {
             serviceDesc, 
             staffName,
             staffID,
-            time,
+            startTime,
+            endTime,
             status,
         });
 

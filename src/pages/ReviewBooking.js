@@ -29,6 +29,16 @@ function ReviewBooking() {
     };
 
     return (
+        <>
+        <div className="header">
+                <div className="topLogo" />
+                <ul>
+                    <li><a className="active" href="#home">Appointment</a></li>
+                    <li><a className="active" href="/ReviewBooking">Feedback</a></li>
+                    <li><a className="active" href="/ProfileForm">Profile</a></li>
+                    <li><a className="active" href="#home">Home</a></li>
+                </ul>
+            </div>
         <div className="app-container">
             <div className="booking-header">
                 <h2>PENDING BOOKING</h2>
@@ -48,7 +58,8 @@ function ReviewBooking() {
                     </div>
                 </div>
             </div>
-        </div>
+            </div>
+        </>
     );
 }
 

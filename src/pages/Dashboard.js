@@ -53,6 +53,9 @@ export default function Dashboard() {
             <div className="header">
                 <div className="topLogo" />
                 <ul>
+                    <li><a className="active" href="#home">Appointment</a></li>
+                    <li><a className="active" href="/ReviewBooking">Feedback</a></li>
+                    <li><a className="active" href="/ProfileForm">Profile</a></li>
                     <li><a className="active" href="#home">Home</a></li>
                 </ul>
             </div>

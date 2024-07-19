@@ -169,7 +169,7 @@ function AppListByCust() {
                         <p><strong>Remark:</strong> {selectedAppointment.remark}</p>
                         {selectedAppointment.filePath && (
                             <div className="view-image">
-                                <img src={selectedAppointment.filePath} alt="Progress" />
+                                <img style={{ width: '100%' }} src={selectedAppointment.filePath} alt="Progress" />
                             </div>
                         )}
                     </div>

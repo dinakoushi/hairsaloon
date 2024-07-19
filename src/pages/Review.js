@@ -8,8 +8,9 @@ const Reviews = () => {
     const [reviews, setReviews] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [feedback, setFeedback] = useState("");
-    const [userId, setUserId] = useState("66897ffee6217b5fec676c0e");
 
+    const user = JSON.parse(localStorage.getItem('user'));
+    const loginId = user ? user._id : null; // Extract user ID
     // Fetch reviews from the server
     const fetchReviews = async () => {
         try {
@@ -28,7 +29,7 @@ const Reviews = () => {
         try {
             const response = await axios.post('http://localhost:5001/addReview', {
                 feedback,
-                userId
+                loginId
             });
             alert("Data saved successfully");
             setFeedback("");

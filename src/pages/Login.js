@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from 'react-router-dom';
 import "../assets/styles/global.css";
@@ -8,7 +8,10 @@ export default function Login() {
     const { register, handleSubmit, formState: { errors } } = useForm();
     const navigate = useNavigate();
     const { login } = useAuth();
-
+    useEffect(() => {
+        // Clear local storage when the login component mounts
+        localStorage.clear();
+    }, []);
     const onLoginClick = async (data) => {
         try {
             const response = await fetch('http://localhost:5001/login', {
@@ -26,7 +29,7 @@ export default function Login() {
 
                 // Redirect based on user role
                 if (result.user.role === "Admin") {
-                    navigate('/DashboardAdminPage');
+                    navigate('/DashboardAdmin');
                 } else {
                     navigate('/Dashboard'); // Default dashboard
                 }

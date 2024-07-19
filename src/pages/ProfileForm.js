@@ -20,8 +20,9 @@ function ProfileForm({ profileId }) {
         email: ''
     });
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const sampleUserId = '66897ffee6217b5fec676c0e';
 
+    const user = JSON.parse(localStorage.getItem('user'));
+    const loginId = user ? user._id : null; // Extract user ID
     const fetchProfile = async (userId) => {
         try {
             const response = await axios.get(`http://localhost:5001/profile/${userId}`);
@@ -32,7 +33,7 @@ function ProfileForm({ profileId }) {
     };
 
     useEffect(() => {
-        fetchProfile(sampleUserId);
+        fetchProfile(loginId);
     }, []);
 
     const handleOnSubmit = async (userId) => {
@@ -55,7 +56,7 @@ function ProfileForm({ profileId }) {
     const handleButtonClick = (e) => {
         e.preventDefault();
         if (editMode) {
-            handleOnSubmit(sampleUserId);
+            handleOnSubmit(loginId);
         } else {
             setEditMode(true);
             setSubmitName("Update");
@@ -71,13 +72,13 @@ function ProfileForm({ profileId }) {
         try {
             // Validate old password
             const response = await axios.post(`http://localhost:5001/validatePassword`, {
-                userId: sampleUserId,
+                userId: loginId,
                 oldPassword: oldPassword
             });
 
             if (response.data.valid) {
                 // Proceed to update password
-                await axios.put(`http://localhost:5001/changePassword/${sampleUserId}`, {
+                await axios.put(`http://localhost:5001/changePassword/${loginId}`, {
                     password: password
                 });
                 alert("Password updated successfully");
@@ -99,6 +100,9 @@ function ProfileForm({ profileId }) {
             <div className="header">
                 <div className="topLogo" />
                 <ul>
+                    <li><a className="active" href="#home">Appointment</a></li>
+                    <li><a className="active" href="/ReviewBooking">Feedback</a></li>
+                    <li><a className="active" href="/ProfileForm">Profile</a></li>
                     <li><a className="active" href="#home">Home</a></li>
                 </ul>
             </div>

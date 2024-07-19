@@ -3,12 +3,14 @@ import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import TimeSlots from './TimeSlots';
 import "../assets/styles/appointment.css";
+import { useNavigate } from 'react-router-dom';
 import axios from "axios";
-const sampleUserId = '66897ffee6217b5fec676c0e';
+
 function BookingDate() {
     const [name, setName] = useState("");
     const [phoneNo, setPhoneNo] = useState("");
     const [status, setStatus] = useState("Pending");
+    const navigate = useNavigate();
     const [profile, setProfile] = useState({
         name: '',
         phoneNo: '',
@@ -17,9 +19,14 @@ function BookingDate() {
     const [services, setServices] = useState([]);
     const [bookedSlots, setBookedSlots] = useState([]);
     const [selectedDate, setSelectedDate] = useState(null);
-    const [selectedTime, setSelectedTime] = useState(null);
+    const [selectedTime, setSelectedTime] = useState({ startTime: null, endTime: null });
     const [selectedStaff, setSelectedStaff] = useState({ _id: "", staffName: "" });
     const [staff, setStaff] = useState([]);
+
+    const user = JSON.parse(localStorage.getItem('user'));
+    const loginId = user ? user._id : null;
+
+    const minDate = new Date();
 
     const handleDateChange = (date) => {
         setSelectedDate(date);
@@ -45,7 +52,7 @@ function BookingDate() {
     };
 
     const fetchProfile = async (userId) => {
-        console.log(`Fetching profile for user ID: ${userId}`); // Log the user ID
+        console.log(`Fetching profile for user ID: ${userId}`);
         try {
             const response = await axios.get(`http://localhost:5001/profile/${userId}`);
             setProfile(response.data);
@@ -64,7 +71,6 @@ function BookingDate() {
     };
 
     const handleBooking = async () => {
-        // Validate input fields
         if (!selectedStaff) {
             alert("Please select a staff.");
             return;
@@ -77,28 +83,29 @@ function BookingDate() {
             alert("Please select a date.");
             return;
         }
-        if (!selectedTime) {
+        if (!selectedTime.startTime || !selectedTime.endTime) {
             alert("Please select a time slot before booking.");
             return;
         }
 
         try {
             const response = await axios.post('http://localhost:5001/book', {
-                userId: sampleUserId,
+                userId: loginId,
                 date: formatDateToString(selectedDate),
-                serviceCode: selectedService.servicesCode, // Send the service code
-                serviceDesc: selectedService.servicesDesc, // Send the service description
-                staffName: selectedStaff.staffName, // Send the service description
-                staffID: selectedStaff._id, // Send the service description
-                time: selectedTime,
+                serviceCode: selectedService.servicesCode,
+                serviceDesc: selectedService.servicesDesc,
+                staffName: selectedStaff.staffName,
+                staffID: selectedStaff._id,
+                startTime: selectedTime.startTime,
+                endTime: selectedTime.endTime,
                 status: status,
             });
             alert(response.data.message);
-            fetchBookedSlots(formatDateToString(selectedDate)); // Refresh booked slots
-            setSelectedTime(null); // Reset selected time
-            setSelectedService({ servicesCode: "", servicesDesc: "", duration: 0 });; // Reset services
-            setSelectedStaff({ _id: "", staffName: "" });; // Reset services
-            setSelectedDate(null); // Reset selected date
+            fetchBookedSlots(formatDateToString(selectedDate));
+            setSelectedTime({ startTime: null, endTime: null });
+            setSelectedService({ servicesCode: "", servicesDesc: "", duration: 0 });
+            setSelectedStaff({ _id: "", staffName: "" });
+            setSelectedDate(null);
         } catch (error) {
             console.error('Error booking slot:', error);
             alert('Failed to book slot. Please try again.');
@@ -106,8 +113,7 @@ function BookingDate() {
     };
 
     useEffect(() => {
-        // Fetch profile for the sample user ID
-        fetchProfile(sampleUserId);
+        fetchProfile(loginId);
         fetchServices();
         fetchStaff();
     }, []);
@@ -120,10 +126,10 @@ function BookingDate() {
             date.getFullYear(),
             date.getMonth(),
             date.getDate(),
-            0,  // Set hours to 0 for midnight UTC
-            0,  // Set minutes to 0
-            0   // Set seconds to 0
-        )).toISOString().split('T')[0]; // Format to YYYY-MM-DD
+            0,
+            0,
+            0
+        )).toISOString().split('T')[0];
     };
 
     const handleServiceChange = (e) => {
@@ -133,54 +139,77 @@ function BookingDate() {
 
     const handleStaffChange = (e) => {
         const selectedStaff = staff.find(staff => staff._id === e.target.value);
-        setSelectedStaff(selectedStaff || { _id: "", staffName: ""});
+        setSelectedStaff(selectedStaff || { _id: "", staffName: "" });
     };
+
+    const viewCustomer = (customerId, customerName) => {
+        navigate(`/appListByCust/${customerId}`, { state: { name: customerName } });
+    };
+
     return (
-        <div className="app-container">
-            <div className="booking-header">
-                <h2>BOOKING</h2>
+        <>
+            <div className="header">
+                <div className="topLogo" />
+                <ul>
+                    <li><a className="active" href="/Dashboard">Home</a></li>
+                    <li><a className="active" href="/ProfileForm">Profile</a></li>
+                    <li><a className="active" href="/ReviewBooking">Feedback</a></li>
+                    {/*<li><a*/}
+                    {/*    className="active"*/}
+                    {/*    onClick={() => viewCustomer(loginId, loginId)}*/}
+                    {/*    href="#" // Add href="#" to prevent default link behavior if needed*/}
+                    {/*>*/}
+                    {/*    Appointment*/}
+                    {/*</a></li>*/}
+                </ul>
             </div>
-            <div className="page-container">
-                <div className="form-container">
-                    <div className="form-group">
-                        <div className="lbl"><label htmlFor="name"><b>Name</b></label></div>
-                        <div className="inp"><input type="text" placeholder="Enter Name" name="name" value={profile.name} onChange={(e) => setName(e.target.value)} required disabled={false} /></div>
+            <div className="app-container">
+                <div className="booking-header">
+                    <h2>BOOKING</h2>
+                </div>
+                <div className="page-container">
+                    <div className="form-container">
+                        <div className="form-group">
+                            <div className="lbl"><label htmlFor="name"><b>Name</b></label></div>
+                            <div className="inp"><input type="text" placeholder="Enter Name" name="name" value={profile.name} onChange={(e) => setName(e.target.value)} required disabled={false} /></div>
 
-                        <div className="lbl"><label htmlFor="phoneNo"><b>Phone No</b></label></div>
-                        <div className="inp"><input type="text" placeholder="Enter Phone Number" name="phoneNo" value={profile.phoneNo} onChange={(e) => setPhoneNo(e.target.value)} required/></div>
+                            <div className="lbl"><label htmlFor="phoneNo"><b>Phone No</b></label></div>
+                            <div className="inp"><input type="text" placeholder="Enter Phone Number" name="phoneNo" value={profile.phoneNo} onChange={(e) => setPhoneNo(e.target.value)} required /></div>
 
-                        <div className="lbl"><label htmlFor="hairstylists"><b>Hair Stylists</b></label></div>
-                        <div className="inp">
-                            <select className="select-Opt" name="staff" value={selectedStaff._id} onChange={handleStaffChange} required>
-                                <option value="">Select a Hair Stylists</option>
-                                {staff.map(staff => (
-                                    <option key={staff._id} value={staff._id}>{staff.staffName}</option>
-                                ))}
-                            </select>
+                            <div className="lbl"><label htmlFor="hairstylists"><b>Hair Stylists</b></label></div>
+                            <div className="inp">
+                                <select className="select-Opt" name="staff" value={selectedStaff._id} onChange={handleStaffChange} required>
+                                    <option value="">Select a Hair Stylist</option>
+                                    {staff.map(staff => (
+                                        <option key={staff._id} value={staff._id}>{staff.staffName}</option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            <div className="lbl"><label htmlFor="services"><b>Services</b></label></div>
+                            <div className="inp">
+                                <select className="select-Opt" name="services" value={selectedService.servicesCode} onChange={handleServiceChange} required>
+                                    <option value="">Select a Service</option>
+                                    {services.map(service => (
+                                        <option key={service.servicesCode} value={service.servicesCode}>{service.servicesDesc}</option>
+                                    ))}
+                                </select>
+                            </div>
+                            <button type="button" className="btnSubmit" onClick={handleBooking}>Book</button>
                         </div>
-
-                        <div className="lbl"><label htmlFor="services"><b>Services</b></label></div>
-                        <div className="inp">
-                            <select className="select-Opt" name="services" value={selectedService.servicesCode} onChange={handleServiceChange} required>
-                                <option value="">Select a Service</option>
-                                {services.map(service => (
-                                    <option key={service.servicesCode} value={service.servicesCode}>{service.servicesDesc}</option>
-                                ))}
-                            </select>
-                        </div>
-                        <button type="button" className="btnSubmit" onClick={handleBooking}>Book</button>
+                    </div>
+                    <div className="calendar-container">
+                        <Calendar
+                            className="calendarStyle"
+                            onChange={handleDateChange}
+                            value={selectedDate}
+                            minDate={minDate} // Disable past dates
+                        />
+                        {selectedDate && <TimeSlots bookedSlots={bookedSlots} onTimeSelect={setSelectedTime} selectedTime={selectedTime.startTime} serviceDuration={selectedService.duration} />}
                     </div>
                 </div>
-                <div className="calendar-container">
-                    <Calendar className="calendarStyle"
-                        onChange={handleDateChange}
-                        value={selectedDate}
-                    />
-
-                    {selectedDate && <TimeSlots bookedSlots={bookedSlots} onTimeSelect={setSelectedTime} selectedTime={selectedTime} serviceDuration={selectedService.duration} />}
-                </div>
             </div>
-        </div>
+        </>
     );
 }
 
