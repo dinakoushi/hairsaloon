@@ -30,7 +30,7 @@
   },
   "scripts": {
     "start": "node server.js",
-    "build": "npm install && npm run build"
+    "heroku-postbuild": "npm install && npm run build"
   },
   "eslintConfig": {
     "extends": [
