@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import '../assets/styles/reviewbooking.css'; // Ensure your styles are correctly linked
+import '@fortawesome/fontawesome-free/css/all.min.css';
 
 function ReviewBooking() {
     const [appointments, setAppointments] = useState([]);
@@ -31,19 +32,20 @@ function ReviewBooking() {
     return (
         <>
         <div className="header">
-                <div className="topLogo" />
-                <ul>
-                    <li><a className="active" href="#home">Appointment</a></li>
-                    <li><a className="active" href="/ReviewBooking">Feedback</a></li>
-                    <li><a className="active" href="/ProfileForm">Profile</a></li>
-                    <li><a className="active" href="#home">Home</a></li>
-                </ul>
-            </div>
+        <div className="topLogo" />
+            <ul>
+                <li><a className="active" href="/" data-toggle="tooltip" title="Logout"><i className="fas fa-sign-out-alt"></i></a></li>
+                <li><a className="active" href="/DashboardAdmin" data-toggle="tooltip" title="Home"><i className="fas fa-home"></i></a></li>
+                <li><a className="active" href="/CustomerLists" data-toggle="tooltip" title="Update Progress"><i className="fas fa-tachometer-alt"></i></a></li>
+                <li><a className="active" href="/ReviewBooking" data-toggle="tooltip" title="Pending Booking"><i className="fas fa-list-alt"></i></a></li>
+            </ul>
+        </div>
         <div className="app-container">
             <div className="booking-header">
                 <h2>PENDING BOOKING</h2>
             </div>
-            <div className="page-container">
+                {appointments.length === 0 ? (<p className="no-appointments">No appointments need approval at this time.</p>):null}
+                <div className="page-container">
                 <div className="form-container">
                     <div className="appointment-list">
                         {appointments.map(appointment => (
@@ -58,7 +60,7 @@ function ReviewBooking() {
                     </div>
                 </div>
             </div>
-            </div>
+        </div>
         </>
     );
 }

@@ -2,8 +2,11 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "../assets/styles/profile.css";
 import Modal from './Modal'; // Ensure this is a valid Modal component
+import '@fortawesome/fontawesome-free/css/all.min.css';
+import { useNavigate } from 'react-router-dom';
 
 function ProfileForm({ profileId }) {
+    const navigate = useNavigate();
     const [name, setName] = useState("");
     const [phoneNo, setPhoneNo] = useState("");
     const [oldPassword, setOldPassword] = useState(""); // State for old password
@@ -22,19 +25,27 @@ function ProfileForm({ profileId }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const user = JSON.parse(localStorage.getItem('user'));
-    const loginId = user ? user._id : null; // Extract user ID
+    const loginId = user ? user._id : null;
+    const loginName = user ? user.name : null;
+
+    useEffect(() => {
+        if (loginId) {
+            fetchProfile(loginId);
+        }
+    }, [loginId]);
+
     const fetchProfile = async (userId) => {
         try {
             const response = await axios.get(`http://localhost:5001/profile/${userId}`);
             setProfile(response.data);
+            setName(response.data.name);
+            setPhoneNo(response.data.phoneNo);
+            setEmail(response.data.email);
+            setRole(response.data.role);
         } catch (error) {
             console.error('Error fetching profile:', error);
         }
     };
-
-    useEffect(() => {
-        fetchProfile(loginId);
-    }, []);
 
     const handleOnSubmit = async (userId) => {
         try {
@@ -95,15 +106,21 @@ function ProfileForm({ profileId }) {
         }
     };
 
+    const viewCustomer = (customerId, customerName) => {
+        // This function navigates to a new route
+        navigate(`/appListByCust/${customerId}`, { state: { name: customerName } });
+    };
     return (
         <>
             <div className="header">
                 <div className="topLogo" />
                 <ul>
-                    <li><a className="active" href="#home">Appointment</a></li>
-                    <li><a className="active" href="/ReviewBooking">Feedback</a></li>
-                    <li><a className="active" href="/ProfileForm">Profile</a></li>
-                    <li><a className="active" href="#home">Home</a></li>
+                    <li><a className="active" href="/" data-toggle="tooltip" title="Logout"><i className="fas fa-sign-out-alt"></i></a></li>
+                    <li><a className="active" href="/Dashboard" data-toggle="tooltip" title="Home"><i className="fas fa-home"></i></a></li>
+                    <li><a className="active" href="/ProfileForm" data-toggle="tooltip" title="Profile"><i className="fas fa-user"></i></a></li>
+                    <li><a className="active" href="/Review" data-toggle="tooltip" title="Feedback"><i className="fas fa-comments"></i></a></li>
+                    <li><a className="active" href="#" data-toggle="tooltip" title="Progress" onClick={(e) => { e.preventDefault(); viewCustomer(loginId, loginName); }}><i class="fas fa-tachometer-alt"></i></a></li>
+                    <li><a className="active" href="/BookingDate" data-toggle="tooltip" title="Booking"><i className="fas fa-calendar-check"></i></a></li>
                 </ul>
             </div>
             <div className="content">
@@ -111,13 +128,13 @@ function ProfileForm({ profileId }) {
                     <form className="loginForm">
                         <p className="title">Profile</p>
                         <div className="lbl"><label htmlFor="name"><b>Name</b></label></div>
-                        <div className="inp"><input type="text" placeholder="Enter Name" name="name" value={profile.name} onChange={(e) => setName(e.target.value)} required disabled={false} /></div>
+                        <div className="inp"><input type="text" placeholder="Enter Name" name="name" value={name} onChange={(e) => setName(e.target.value)} required disabled={!editMode} /></div>
 
                         <div className="lbl"><label htmlFor="phoneNo"><b>Phone No</b></label></div>
-                        <div className="inp"><input type="text" placeholder="Enter Phone Number" name="phoneNo" value={profile.phoneNo} onChange={(e) => setPhoneNo(e.target.value)} required disabled={!editMode} /></div>
+                        <div className="inp"><input type="text" placeholder="Enter Phone Number" name="phoneNo" value={phoneNo} onChange={(e) => setPhoneNo(e.target.value)} required disabled={!editMode} /></div>
 
                         <div className="lbl"><label htmlFor="email"><b>Email</b></label></div>
-                        <div className="inp"><input type="text" placeholder="Enter Email" name="email" value={profile.email} onChange={(e) => setEmail(e.target.value)} required disabled={!editMode} /></div>
+                        <div className="inp"><input type="text" placeholder="Enter Email" name="email" value={email} onChange={(e) => setEmail(e.target.value)} required disabled={!editMode} /></div>
 
                         <button type="button" className="btnprofile" onClick={handleButtonClick}>{submitName}</button>
                         <button type="button" className="btnprofile" onClick={() => setIsModalOpen(true)}>Change Password</button>

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import "../assets/styles/global.css";
 import { useNavigate } from 'react-router-dom';
+import '@fortawesome/fontawesome-free/css/all.min.css';
 
 function Register() {
     const [name, setName] = useState("");
@@ -79,10 +80,7 @@ function Register() {
             <div className="header">
                 <div className="topLogo" />
                 <ul>
-                    <li><a className="active" href="#home">Home</a></li>
-                    {/*<li><a href="#news">News</a></li>*/}
-                    {/*<li><a href="#contact">Contact</a></li>*/}
-                    {/*<li><a href="#about">About</a></li>*/}
+                    <li><a className="active" href="/" data-toggle="tooltip" title="Login"><i className="fas fa-sign-in-alt"></i></a></li>
                 </ul>
             </div>
             <div className="content">

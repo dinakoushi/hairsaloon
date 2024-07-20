@@ -44,3 +44,10 @@
     font-size: smaller;
     font-family: monospace;
 }
+
+.no-appointments {
+    font-size: 16px;
+    color: #888;
+    text-align: center;
+    margin-top: 5%;
+}

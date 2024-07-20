@@ -5,6 +5,7 @@ import TimeSlots from './TimeSlots';
 import "../assets/styles/appointment.css";
 import { useNavigate } from 'react-router-dom';
 import axios from "axios";
+import '@fortawesome/fontawesome-free/css/all.min.css';
 
 function BookingDate() {
     const [name, setName] = useState("");
@@ -25,12 +26,19 @@ function BookingDate() {
 
     const user = JSON.parse(localStorage.getItem('user'));
     const loginId = user ? user._id : null;
+    const loginName = user ? user.name : null;
 
     const minDate = new Date();
+    const maxDate = new Date();
+    maxDate.setDate(minDate.getDate() + 1); 
 
     const handleDateChange = (date) => {
+        if (date <= minDate) {
+            alert("Bookings can only be made one day in advance!");
+            return;
+        }
         setSelectedDate(date);
-        fetchBookedSlots(formatDateToString(date));
+        fetchBookedSlots(formatDateToString(date), selectedStaff._id);
     };
 
     const fetchServices = async () => {
@@ -61,9 +69,9 @@ function BookingDate() {
         }
     };
 
-    const fetchBookedSlots = async (date) => {
+    const fetchBookedSlots = async (date, staffID) => {
         try {
-            const response = await axios.get('http://localhost:5001/bookedSlots', { params: { date } });
+            const response = await axios.get('http://localhost:5001/bookedSlots', { params: { date, staffID } });
             setBookedSlots(response.data);
         } catch (error) {
             console.error('Error fetching booked slots:', error);
@@ -101,7 +109,7 @@ function BookingDate() {
                 status: status,
             });
             alert(response.data.message);
-            fetchBookedSlots(formatDateToString(selectedDate));
+            fetchBookedSlots(formatDateToString(selectedDate), selectedStaff._id);
             setSelectedTime({ startTime: null, endTime: null });
             setSelectedService({ servicesCode: "", servicesDesc: "", duration: 0 });
             setSelectedStaff({ _id: "", staffName: "" });
@@ -140,9 +148,13 @@ function BookingDate() {
     const handleStaffChange = (e) => {
         const selectedStaff = staff.find(staff => staff._id === e.target.value);
         setSelectedStaff(selectedStaff || { _id: "", staffName: "" });
+        if (selectedDate && selectedStaff) {
+            fetchBookedSlots(formatDateToString(selectedDate), selectedStaff._id);
+        }
     };
 
     const viewCustomer = (customerId, customerName) => {
+        // This function navigates to a new route
         navigate(`/appListByCust/${customerId}`, { state: { name: customerName } });
     };
 
@@ -151,16 +163,12 @@ function BookingDate() {
             <div className="header">
                 <div className="topLogo" />
                 <ul>
-                    <li><a className="active" href="/Dashboard">Home</a></li>
-                    <li><a className="active" href="/ProfileForm">Profile</a></li>
-                    <li><a className="active" href="/ReviewBooking">Feedback</a></li>
-                    {/*<li><a*/}
-                    {/*    className="active"*/}
-                    {/*    onClick={() => viewCustomer(loginId, loginId)}*/}
-                    {/*    href="#" // Add href="#" to prevent default link behavior if needed*/}
-                    {/*>*/}
-                    {/*    Appointment*/}
-                    {/*</a></li>*/}
+                    <li><a className="active" href="/" data-toggle="tooltip" title="Logout"><i className="fas fa-sign-out-alt"></i></a></li>
+                    <li><a className="active" href="/Dashboard" data-toggle="tooltip" title="Home"><i class="fas fa-home"></i></a></li>
+                    <li><a className="active" href="/ProfileForm" data-toggle="tooltip" title="Profile"><i class="fas fa-user"></i></a></li>
+                    <li><a className="active" href="/Review" data-toggle="tooltip" title="Feedback"><i class="fas fa-comments"></i></a></li>
+                    <li><a className="active" href="#" data-toggle="tooltip" title="Progress" onClick={(e) => { e.preventDefault(); viewCustomer(loginId, loginName); }}><i class="fas fa-tachometer-alt"></i></a></li>
+                    <li><a className="active" href="/BookingDate" data-toggle="tooltip" title="Booking"><i class="fas fa-calendar-check"></i></a></li>
                 </ul>
             </div>
             <div className="app-container">
@@ -199,13 +207,19 @@ function BookingDate() {
                         </div>
                     </div>
                     <div className="calendar-container">
-                        <Calendar
-                            className="calendarStyle"
-                            onChange={handleDateChange}
-                            value={selectedDate}
-                            minDate={minDate} // Disable past dates
-                        />
-                        {selectedDate && <TimeSlots bookedSlots={bookedSlots} onTimeSelect={setSelectedTime} selectedTime={selectedTime.startTime} serviceDuration={selectedService.duration} />}
+                        {selectedStaff._id && selectedService.servicesCode ? (
+                            <>
+                                <Calendar
+                                    className="calendarStyle"
+                                    onChange={handleDateChange}
+                                    value={selectedDate}
+                                    minDate={minDate} // Disable past dates
+                                />
+                                {selectedDate && <TimeSlots bookedSlots={bookedSlots} onTimeSelect={setSelectedTime} selectedTime={selectedTime.startTime} serviceDuration={selectedService.duration} />}
+                            </>
+                        ) : (
+                            <p className="selectPrompt">Please select a hairstylist and a service before selecting a date.</p>
+                        )}
                     </div>
                 </div>
             </div>

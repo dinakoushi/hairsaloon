@@ -46,9 +46,6 @@ export default function Login() {
         <form onSubmit={handleSubmit(onLoginClick)}>
             <div className="header">
                 <div className="topLogo" />
-                <ul>
-                    <li><a className="active" href="#home">Home</a></li>
-                </ul>
             </div>
             <div className="content">
                 <div className="loginScreen">

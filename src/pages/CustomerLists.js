@@ -31,6 +31,16 @@ function CustomerLists() {
     };
 
     return (
+        <>
+        <div className="header">
+            <div className="topLogo" />
+            <ul>
+                <li><a className="active" href="/" data-toggle="tooltip" title="Logout"><i className="fas fa-sign-out-alt"></i></a></li>
+                <li><a className="active" href="/DashboardAdmin" data-toggle="tooltip" title="Home"><i className="fas fa-home"></i></a></li>
+                <li><a className="active" href="/CustomerLists" data-toggle="tooltip" title="Update Progress"><i className="fas fa-tachometer-alt"></i></a></li>
+                <li><a className="active" href="/ReviewBooking" data-toggle="tooltip" title="Pending Booking"><i className="fas fa-list-alt"></i></a></li>
+            </ul>
+        </div>
         <div className="app-container">
             <div className="booking-header">
                 <h2>CUSTOMER LISTS</h2>
@@ -69,7 +79,8 @@ function CustomerLists() {
                     </table>
                 </div>
             </div>
-        </div>
+            </div>
+        </>
     );
 }
 

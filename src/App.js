@@ -11,7 +11,6 @@ import DashboardAdminPage from './pages/DashboardAdmin';
 import ReviewBookingPage from './pages/ReviewBooking';
 import CustomerListsPage from './pages/CustomerLists';
 import AppListByCustPage from './pages/AppListByCust';
-import ProgressTreatmentPage from './pages/ProgressTreatment';
 import { AuthProvider, useAuth } from './AuthContext';
 
 
@@ -58,7 +57,6 @@ function App() {
                     <Route path="/ReviewBooking" element={<PrivateRoute><ReviewBookingPage /></PrivateRoute>} />
                     <Route path="/CustomerLists" element={<PrivateRoute><CustomerListsPage /></PrivateRoute>} />
                     <Route path="/appListByCust/:customerId" element={<PrivateRoute><AppListByCustPage /></PrivateRoute>} />
-                    <Route path="/ProgressTreatment" element={<PrivateRoute><ProgressTreatmentPage /></PrivateRoute>} />
                     <Route path="/Review" element={<PrivateRoute><Review /></PrivateRoute>} />
                 </Routes>
             </Router>

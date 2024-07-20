@@ -5,8 +5,10 @@ import { useParams, useLocation } from 'react-router-dom';
 import '../assets/styles/customerlists.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import Modal from './Modal'; // Import the Modal component
-
+import { useNavigate } from 'react-router-dom';
+import path from '../services/productAPI';
 function AppListByCust() {
+    const navigate = useNavigate();
     const { customerId } = useParams();
     const [bookings, setBookings] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -18,6 +20,11 @@ function AppListByCust() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const { name } = location.state || {};
     const [selectedAppointment, setSelectedAppointment] = useState(null);
+
+    const user = JSON.parse(localStorage.getItem('user'));
+    const loginId = user ? user._id : null;
+    const role = user ? user.role : null;
+    const loginName = user ? user.name : null;
 
     useEffect(() => {
         fetchBookings();
@@ -85,7 +92,43 @@ function AppListByCust() {
         await fetchAppointmentDetails(booking._id); // Fetch booking details
         setIsViewModalOpen(true);
     };
+
+    const viewCustomer = (customerId, customerName) => {
+        // This function navigates to a new route
+        navigate(`/appListByCust/${customerId}`, { state: { name: customerName } });
+    };
+    function formatDate(datetimeString) {
+        const date = new Date(datetimeString);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+        const year = date.getFullYear();
+
+        return `${day}/${month}/${year}`; // Format: DD/MM/YYYY
+    }
+
+
     return (
+        <>
+            <div className="header">
+                <div className="topLogo" />
+
+                {role === 'Admin' ?
+                    <ul>
+                        <li><a className="active" href="/" data-toggle="tooltip" title="Logout"><i className="fas fa-sign-out-alt"></i></a></li>
+                        <li><a className="active" href="/DashboardAdmin" data-toggle="tooltip" title="Home"><i className="fas fa-home"></i></a></li>
+                        <li><a className="active" href="/CustomerLists" data-toggle="tooltip" title="Update Progress"><i className="fas fa-tachometer-alt"></i></a></li>
+                        <li><a className="active" href="/ReviewBooking" data-toggle="tooltip" title="Pending Booking"><i className="fas fa-list-alt"></i></a></li>
+                    </ul>
+                    : <ul>
+                        <li><a className="active" href="/" data-toggle="tooltip" title="Logout"><i className="fas fa-sign-out-alt"></i></a></li>
+                        <li><a className="active" href="/Dashboard" data-toggle="tooltip" title="Home"><i className="fas fa-home"></i></a></li>
+                        <li><a className="active" href="/ProfileForm" data-toggle="tooltip" title="Profile"><i className="fas fa-user"></i></a></li>
+                        <li><a className="active" href="/Review" data-toggle="tooltip" title="Feedback"><i className="fas fa-comments"></i></a></li>
+                        <li><a className="active" href="#" data-toggle="tooltip" title="Progress" onClick={(e) => { e.preventDefault(); viewCustomer(loginId, loginName); }}><i className="fas fa-tachometer-alt"></i></a></li>
+                        <li><a className="active" href="/BookingDate" data-toggle="tooltip" title="Booking"><i className="fas fa-calendar-check"></i></a></li>
+                    </ul>
+                }
+            </div>
         <div className="app-container">
             <div className="booking-header">
                 <h2>APPOINTMENT LISTS</h2>
@@ -117,13 +160,15 @@ function AppListByCust() {
                                                     <i className="fas fa-eye"></i>
                                                     <span className="tooltip">View Progress</span>
                                                 </button>
-                                                <button
+                                                {role === 'Admin' ? <button
                                                     className="btnIcon"
                                                     onClick={() => openModalForBooking(booking)}
                                                 >
                                                     <i className="fas fa-pencil-alt"></i>
                                                     <span className="tooltip">Update Progress</span>
-                                                </button>
+                                                </button> : null
+                                            }
+                                                
                                             </>
                                         )}
                                     </td>
@@ -161,21 +206,24 @@ function AppListByCust() {
                         </button>
                     </form>
                 )}
-            </Modal>
-            <Modal isOpen={isViewModalOpen} onClose={() => setIsViewModalOpen(false)}>
-                {selectedAppointment && (
+                </Modal>
+                <Modal isOpen={isViewModalOpen} onClose={() => setIsViewModalOpen(false)}>
+                    <form className="updateprogress-form" onSubmit={handleUpdateClick}>
+                {selectedAppointment ? (
                     <div className="view-progress">
                         <h6>VIEW PROGRESS</h6>
-                        <p><strong>Remark:</strong> {selectedAppointment.remark}</p>
-                        {selectedAppointment.filePath && (
-                            <div className="view-image">
-                                <img style={{ width: '100%' }} src={selectedAppointment.filePath} alt="Progress" />
-                            </div>
+                        {selectedAppointment.filePath && (<>
+                                <div className="view-image">
+                                        <img className="uploadImage" src={path.getFullUrl(selectedAppointment.filePath)} alt="Progress" />
+                                        <p className="remark"><strong>{formatDate(selectedAppointment.createdAt)}</strong> : {selectedAppointment.remark}</p>
+                                </div></>
                         )}
-                    </div>
-                )}
+                            </div>) : <p><strong>Update progress information is not available yet.</strong></p>
+
+                }</form>
             </Modal>
-        </div>
+            </div>
+        </>
     );
 }
 

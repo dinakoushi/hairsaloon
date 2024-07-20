@@ -5,6 +5,7 @@ const multer = require('multer');
 const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 5001;
+const fs = require('fs');
 
 // Middleware
 app.use(cors());
@@ -33,11 +34,17 @@ const userSchema = new mongoose.Schema({
     password: String,
     role: String,
 });
-// Define User Schema and Model
+
+
+const registerUser = mongoose.model("user", userSchema);
+
+// Define Feedback Schema and Model
 const feedbackSchema = new mongoose.Schema({
     userId: String,
     feedback: String,
 });
+
+const feedbackCol = mongoose.model("feedback", feedbackSchema);
 
 // Define Booking Schema and Model
 const bookingSchema = new mongoose.Schema({
@@ -53,15 +60,24 @@ const bookingSchema = new mongoose.Schema({
     status: String,
 });
 
+const booking = mongoose.model("appointment", bookingSchema);
+
+// Define Service Details Schema and Model
 const serviceDetailSchema = new mongoose.Schema({
     servicesCode: String,
     servicesDesc: String,
 });
 
+const servicedetail = mongoose.model('servicesDetail', serviceDetailSchema);
+
+// Define Staff Details Schema and Model
 const staffDetailSchema = new mongoose.Schema({
     staffName: String,
 });
 
+const staffdetail = mongoose.model('staffDetail', staffDetailSchema);
+
+// Define Progress Schema and Model
 const progressSchema = new mongoose.Schema({
     remark: String,
     appointmentId: String,
@@ -69,29 +85,32 @@ const progressSchema = new mongoose.Schema({
     createdAt: { type: Date, default: Date.now }
 });
 
-// Multer storage configuration
+const progress = mongoose.model('progressTreatment', progressSchema);
+
+//Upload Process
+const uploadDir = path.join('public', 'uploads');
+
+// Ensure the uploads directory exist
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+// Configure Multer storage
 const storage = multer.diskStorage({
-    destination: './uploads',
+    destination: (req, file, cb) => {
+        cb(null, uploadDir); 
+    },
     filename: (req, file, cb) => {
         cb(null, `${Date.now()}-${file.originalname}`);
     }
 });
 
-const upload = multer({ storage });
-const staffdetail = mongoose.model('staffDetail', staffDetailSchema);
+// Configure Multer with limits and storage settings
+const upload = multer({
+    storage,
+    limits: { fileSize: 5 * 1024 * 1024 } 
+});
 
-const servicedetail = mongoose.model('servicesDetail', serviceDetailSchema);
-const progress = mongoose.model('progressTreatment', progressSchema);
-const registerUser = mongoose.model("user", userSchema);
-const feedbackCol = mongoose.model("feedback", feedbackSchema);
-//const booking = mongoose.model("progresstreatment", bookingSchema);
-const booking = mongoose.model("appointment", bookingSchema);
-
-
-//const bcrypt = require('bcrypt');
-//userSchema.methods.comparePassword = function (candidatePassword) {
-//    return bcrypt.compare(candidatePassword, this.password);
-//};
 // Register Route
 app.post("/register", async (req, res) => {
     try {
@@ -145,6 +164,43 @@ app.post("/login", async (req, res) => {
     }
 });
 
+// Endpoint to validate old password
+app.post('/validatePassword', async (req, res) => {
+    const { userId, oldPassword } = req.body;
+
+    try {
+        const user = await registerUser.findById(userId);
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        if (user.password === oldPassword) {
+            res.json({ valid: true });
+        } else {
+            res.json({ valid: false });
+        }
+    } catch (error) {
+        console.error('Error validating password:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// Endpoint to change password
+app.put('/changePassword/:userId', async (req, res) => {
+    const { userId } = req.params;
+    const { password } = req.body;
+
+    try {
+        await registerUser.findByIdAndUpdate(userId, { password: password });
+
+        res.json({ message: 'Password updated successfully' });
+    } catch (error) {
+        console.error('Error changing password:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
 // View Profile Route
 app.get("/profile/:id", async (req, res) => {
     try {
@@ -181,23 +237,6 @@ app.put("/profileEdit/:id", async (req, res) => {
     }
 });
 
-// Example routes for password validation and change
-//app.post('/validatePassword', async (req, res) => {
-//    const { id, oldPassword } = req.body;
-//    // Fetch user from DB and check oldPassword
-//    const user = await registerUser.findById(id);
-//    const isMatch = await user.comparePassword(oldPassword); // Implement password comparison logic
-//    res.json({ valid: isMatch });
-//});
-
-//app.put('/changePassword/:id', async (req, res) => {
-//    const { password } = req.body;
-//    const user = await registerUser.findById(req.params.id);
-//    user.password = password; // Hash the password before saving
-//    await user.save();
-//    res.json({ message: 'Password updated successfully' });
-//});
-
 // Add Review Route
 app.post("/addReview", async (req, res) => {
     try {
@@ -225,13 +264,17 @@ app.get('/reviewsList', async (req, res) => {
 
 // Get Booked Slots for a Specific Date
 app.get('/bookedSlots', async (req, res) => {
-    const { date } = req.query;
+    const { date, staffID } = req.query;
 
     try {
-        // Fetch all bookings for the specified date
-        const appointments = await booking.find({ date: date, status: 'Approved' });
+        const statuses = ['Approved', 'Pending'];
 
-        // Create an array of booked slots with start time, end time, and hairstylists
+        const appointments = await booking.find({
+            date: date,
+            staffID: staffID,
+            status: { $in: statuses }
+        });
+
         const bookedSlots = appointments.map(appointment => ({
             startTime: appointment.startTime,
             endTime: appointment.endTime,
@@ -246,7 +289,7 @@ app.get('/bookedSlots', async (req, res) => {
     }
 });
 
-// Booking Route
+// List Booking Route
 app.post("/book", async (req, res) => {
     try {
         const { userId, date, serviceCode, serviceDesc, staffName, staffID, startTime, endTime, status } = req.body;
@@ -371,7 +414,7 @@ app.post('/api/progress/:appointmentId', upload.single('image'), async (req, res
         const newProgress = {
             appointmentId,
             description,
-            image: req.file.path // Assuming you're using multer to handle image uploads
+            image: req.file ? req.file.path.replace('public', '') : null
         };
 
         // Save newProgress to your database (e.g., MongoDB)
@@ -400,6 +443,7 @@ app.get('/staff', async (req, res) => {
         res.status(500).send('Error fetching staff details');
     }
 });
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.post('/updateProgress', upload.single('file'), async (req, res) => {
     const { remark, appointmentId } = req.body;
@@ -413,7 +457,6 @@ app.post('/updateProgress', upload.single('file'), async (req, res) => {
     });
 
     try {
-        // Save the progress record to MongoDB
         await newProgress.save();
         res.json({ message: 'Data saved successfully', progress: newProgress });
     } catch (error) {
@@ -425,14 +468,13 @@ app.post('/updateProgress', upload.single('file'), async (req, res) => {
 // Define a POST route to fetch appointment details by ID
 app.post('/appointments/details', async (req, res) => {
     try {
-        const { appointmentId } = req.body; // Extract appointmentId from request body
+        const { appointmentId } = req.body; 
 
         if (!appointmentId) {
             return res.status(400).json({ error: 'Appointment ID is required.' });
         }
 
         console.error('appointmentId:', appointmentId);
-        // Fetch appointment details by ID
         const appointment = await progress.findOne({ appointmentId }).exec();;
 
         if (!appointment) {

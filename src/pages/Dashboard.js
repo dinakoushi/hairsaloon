@@ -8,6 +8,7 @@ import img3 from '../assets/images/3.jpg';
 import img4 from '../assets/images/4.jpg';
 import img5 from '../assets/images/5.jpg';
 import img6 from '../assets/images/6.jpg';
+import '@fortawesome/fontawesome-free/css/all.min.css';
 export default function Dashboard() {
     const [slideIndex, setSlideIndex] = useState(0);
     const navigate = useNavigate();
@@ -17,7 +18,9 @@ export default function Dashboard() {
         }, 5000); // Change image every 5 seconds
         return () => clearInterval(interval);
     }, []);
-
+    const user = JSON.parse(localStorage.getItem('user'));
+    const loginId = user ? user._id : null;
+    const loginName = user ? user.name : null;
     const slides = [
         {
             src: img1,
@@ -47,16 +50,23 @@ export default function Dashboard() {
     const onLoginClick = async () => {
         navigate('/BookingDate'); 
     };
+
+    const viewCustomer = (customerId, customerName) => {
+        // This function navigates to a new route
+        navigate(`/appListByCust/${customerId}`, { state: { name: customerName } });
+    };
     return (
         <>
         <form>
             <div className="header">
                 <div className="topLogo" />
                 <ul>
-                    <li><a className="active" href="#home">Appointment</a></li>
-                    <li><a className="active" href="/ReviewBooking">Feedback</a></li>
-                    <li><a className="active" href="/ProfileForm">Profile</a></li>
-                    <li><a className="active" href="#home">Home</a></li>
+                    <li><a className="active" href="/" data-toggle="tooltip" title="Logout"><i className="fas fa-sign-out-alt"></i></a></li>
+                    <li><a className="active" href="/Dashboard" data-toggle="tooltip" title="Home"><i class="fas fa-home"></i></a></li>
+                    <li><a className="active" href="/ProfileForm" data-toggle="tooltip" title="Profile"><i class="fas fa-user"></i></a></li>
+                    <li><a className="active" href="/Review" data-toggle="tooltip" title="Feedback"><i class="fas fa-comments"></i></a></li>
+                    <li><a className="active" href="#" data-toggle="tooltip" title="Progress" onClick={(e) => { e.preventDefault(); viewCustomer(loginId, loginName); }}><i class="fas fa-tachometer-alt"></i></a></li>
+                    <li><a className="active" href="/BookingDate" data-toggle="tooltip" title="Booking"><i class="fas fa-calendar-check"></i></a></li>
                 </ul>
             </div>
             <div className="split left">
