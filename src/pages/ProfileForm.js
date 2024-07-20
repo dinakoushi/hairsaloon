@@ -122,6 +122,7 @@ function ProfileForm({ profileId }) {
                     <li><a className="active" href="/Review" data-toggle="tooltip" title="Feedback"><i className="fas fa-comments"></i></a></li>
                     <li><a className="active" href="#" data-toggle="tooltip" title="Progress" onClick={(e) => { e.preventDefault(); viewCustomer(loginId, loginName); }}><i class="fas fa-tachometer-alt"></i></a></li>
                     <li><a className="active" href="/BookingDate" data-toggle="tooltip" title="Booking"><i className="fas fa-calendar-check"></i></a></li>
+                    <li><a className="active" href="Service" data-toggle="tooltip" title="Services Lists"><i className="fas fa-cut"></i></a></li>
                 </ul>
             </div>
             <div className="content">

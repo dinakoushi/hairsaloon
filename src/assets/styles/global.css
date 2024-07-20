@@ -188,3 +188,18 @@ span.psw {
 .rgPage {
     margin-top: unset !important;
 }
+
+.centered-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: calc(100vh - 60px); /* Adjust if needed based on the header height */
+}
+
+.serviceImage {
+    max-width: 100%;
+    height: auto;
+    width: 1000px;
+    margin-top: -10%;
+}
+

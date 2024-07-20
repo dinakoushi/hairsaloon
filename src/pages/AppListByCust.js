@@ -6,7 +6,7 @@ import '../assets/styles/customerlists.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import Modal from './Modal'; // Import the Modal component
 import { useNavigate } from 'react-router-dom';
-import path from '../services/productAPI';
+
 function AppListByCust() {
     const navigate = useNavigate();
     const { customerId } = useParams();
@@ -96,9 +96,9 @@ function AppListByCust() {
     };
 
     const viewCustomer = (customerId, customerName) => {
-        // This function navigates to a new route
         navigate(`/appListByCust/${customerId}`, { state: { name: customerName } });
     };
+
     function formatDate(datetimeString) {
         const date = new Date(datetimeString);
         const day = String(date.getDate()).padStart(2, '0');
@@ -108,12 +108,16 @@ function AppListByCust() {
         return `${day}/${month}/${year}`; // Format: DD/MM/YYYY
     }
 
+    // Function to get the full URL for the image
+    const getFullImageUrl = (filePath) => {
+        if (!filePath) return '';
+        return `/${filePath.replace('public\\', '').replace('public/', '').replace(/\\/g, '/')}`;
+    };
 
     return (
         <>
             <div className="header">
                 <div className="topLogo" />
-
                 {role === 'Admin' ?
                     <ul>
                         <li><a className="active" href="/" data-toggle="tooltip" title="Logout"><i className="fas fa-sign-out-alt"></i></a></li>
@@ -128,102 +132,112 @@ function AppListByCust() {
                         <li><a className="active" href="/Review" data-toggle="tooltip" title="Feedback"><i className="fas fa-comments"></i></a></li>
                         <li><a className="active" href="#" data-toggle="tooltip" title="Progress" onClick={(e) => { e.preventDefault(); viewCustomer(loginId, loginName); }}><i className="fas fa-tachometer-alt"></i></a></li>
                         <li><a className="active" href="/BookingDate" data-toggle="tooltip" title="Booking"><i className="fas fa-calendar-check"></i></a></li>
+                        <li><a className="active" href="Service" data-toggle="tooltip" title="Services Lists"><i className="fas fa-cut"></i></a></li>
                     </ul>
                 }
             </div>
-        <div className="app-container">
-            <div className="booking-header">
-                <h2>APPOINTMENT LISTS</h2>
-                <h6>Customer Name: {name}</h6>
-            </div>
-            <div className="AppListByCust">
-                {bookings.length > 0 ? (
-                    <table className="tbleStyle">
-                        <thead className="tHeadStyle">
-                            <tr>
-                                <th style={{ width: '35%' }}>Service</th>
-                                <th style={{ width: '15%' }}>Date</th>
-                                <th style={{ width: '15%' }}>Time</th>
-                                <th style={{ width: '15%' }}>Status</th>
-                                <th style={{ width: '20%' }}>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody className="tBodyStyle">
-                            {bookings.map((booking) => (
-                                <tr key={booking._id}>
-                                    <td>{booking.serviceDesc}</td>
-                                    <td>{booking.date}</td>
-                                    <td>{booking.time}</td>
-                                    <td>{booking.status}</td>
-                                    <td>
-                                        {booking.serviceCode === "ST" && (
-                                            <>
-                                                <button className="btnIcon" onClick={() => openViewModal(booking)}>
-                                                    <i className="fas fa-eye"></i>
-                                                    <span className="tooltip">View Progress</span>
-                                                </button>
-                                                {role === 'Admin' ? <button
-                                                    className="btnIcon"
-                                                    onClick={() => openModalForBooking(booking)}
-                                                >
-                                                    <i className="fas fa-pencil-alt"></i>
-                                                    <span className="tooltip">Update Progress</span>
-                                                </button> : null
-                                            }
-                                                
-                                            </>
-                                        )}
-                                    </td>
+            <div className="app-container">
+                <div className="booking-header">
+                    <h2>APPOINTMENT LISTS</h2>
+                    <h6>Customer Name: {name}</h6>
+                </div>
+                <div className="AppListByCust">
+                    {bookings.length > 0 ? (
+                        <table className="tbleStyle">
+                            <thead className="tHeadStyle">
+                                <tr>
+                                    <th style={{ width: '35%' }}>Service</th>
+                                    <th style={{ width: '15%' }}>Date</th>
+                                    <th style={{ width: '15%' }}>Time</th>
+                                    <th style={{ width: '15%' }}>Status</th>
+                                    <th style={{ width: '20%' }}>Actions</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                ) : (
-                    <p>No bookings found.</p>
-                )}
-            </div>
+                            </thead>
+                            <tbody className="tBodyStyle">
+                                {bookings.map((booking) => (
+                                    <tr key={booking._id}>
+                                        <td>{booking.serviceDesc}</td>
+                                        <td>{booking.date}</td>
+                                        <td>{booking.startTime}</td>
+                                        <td>{booking.status}</td>
+                                        <td>
+                                            {booking.serviceCode === "ST" && (
+                                                <>
+                                                    <button className="btnIcon" onClick={() => openViewModal(booking)}>
+                                                        <i className="fas fa-eye"></i>
+                                                        <span className="tooltip">View Progress</span>
+                                                    </button>
+                                                    {role === 'Admin' ? (
+                                                        <button
+                                                            className="btnIcon"
+                                                            onClick={() => openModalForBooking(booking)}
+                                                        >
+                                                            <i className="fas fa-pencil-alt"></i>
+                                                            <span className="tooltip">Update Progress</span>
+                                                        </button>
+                                                    ) : null}
+                                                </>
+                                            )}
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    ) : (
+                        <p>No bookings found.</p>
+                    )}
+                </div>
 
-            <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-                {selectedBooking && (
-                    <form className="updateprogress-form" onSubmit={handleUpdateClick}>
-                        <h6>UPDATE PROGRESS TREATMENT!</h6>
-                        <div className="progressForm">
-                            <input
-                                type="file"
-                                accept="image/*"
-                                onChange={(e) => setFile(e.target.files[0])}
-                                className="updateprogress-file-input"
-                            />
-                            <textarea
-                                name="remark"
-                                value={remark}
-                                onChange={(e) => setRemark(e.target.value)}
-                                placeholder="Write remark here...."
-                                required
-                                className="updateprogress-textarea"
-                            />
-                        </div>
-                        <button type="submit" className="updateprogress-button" disabled={isSubmitting}>
-                            {isSubmitting ? 'Submitting...' : 'Submit'}
-                        </button>
-                    </form>
-                )}
+                <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+                    {selectedBooking && (
+                        <form className="updateprogress-form" onSubmit={handleUpdateClick}>
+                            <h6>UPDATE PROGRESS TREATMENT!</h6>
+                            <div className="progressForm">
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={(e) => setFile(e.target.files[0])}
+                                    className="updateprogress-file-input"
+                                />
+                                <textarea
+                                    name="remark"
+                                    value={remark}
+                                    onChange={(e) => setRemark(e.target.value)}
+                                    placeholder="Write remark here...."
+                                    required
+                                    className="updateprogress-textarea"
+                                />
+                            </div>
+                            <button type="submit" className="updateprogress-button" disabled={isSubmitting}>
+                                {isSubmitting ? 'Submitting...' : 'Submit'}
+                            </button>
+                        </form>
+                    )}
                 </Modal>
-                <Modal isOpen={isViewModalOpen} onClose={() => setIsViewModalOpen(false)}>
-                    <form className="updateprogress-form" onSubmit={handleUpdateClick}>
-                {selectedAppointment ? (
-                    <div className="view-progress">
-                        <h6>VIEW PROGRESS</h6>
-                        {selectedAppointment.filePath && (<>
-                                <div className="view-image">
-                                        <img className="uploadImage" src={path.getFullUrl(selectedAppointment.filePath)} alt="Progress" />
-                                        <p className="remark"><strong>{formatDate(selectedAppointment.createdAt)}</strong> : {selectedAppointment.remark}</p>
-                                </div></>
-                        )}
-                            </div>) : <p><strong>Update progress information is not available yet.</strong></p>
 
-                }</form>
-            </Modal>
+                <Modal isOpen={isViewModalOpen} onClose={() => setIsViewModalOpen(false)}>
+                    <form className="updateprogress-form">
+                        {selectedAppointment ? (
+                            <div className="view-progress">
+                                <h6>VIEW PROGRESS</h6>
+                                {selectedAppointment.filePath && (
+                                    <div className="view-image">
+                                        <img
+                                            className="uploadImage"
+                                            src={getFullImageUrl(selectedAppointment.filePath)}
+                                            alt="Progress"
+                                        />
+                                        <p className="remark">
+                                            <strong>{formatDate(selectedAppointment.createdAt)}</strong> : {selectedAppointment.remark}
+                                        </p>
+                                    </div>
+                                )}
+                            </div>
+                        ) : (
+                            <p><strong>Update progress information is not available yet.</strong></p>
+                        )}
+                    </form>
+                </Modal>
             </div>
         </>
     );

@@ -12,6 +12,7 @@ import ReviewBookingPage from './pages/ReviewBooking';
 import CustomerListsPage from './pages/CustomerLists';
 import AppListByCustPage from './pages/AppListByCust';
 import { AuthProvider, useAuth } from './AuthContext';
+import ServicePage from './pages/Service';
 
 
 function PrivateRoute({ children }) {
@@ -58,6 +59,7 @@ function App() {
                     <Route path="/CustomerLists" element={<PrivateRoute><CustomerListsPage /></PrivateRoute>} />
                     <Route path="/appListByCust/:customerId" element={<PrivateRoute><AppListByCustPage /></PrivateRoute>} />
                     <Route path="/Review" element={<PrivateRoute><Review /></PrivateRoute>} />
+                    <Route path="/Service" element={<ServicePage />} />
                 </Routes>
             </Router>
         </AuthProvider>
