@@ -12,16 +12,34 @@ app.use(cors());
 app.use(express.json());
 
 // MongoDB Connection
-mongoose.connect("mongodb+srv://HBS_admin:HBS%40123@clusterown.wc7a6xv.mongodb.net/HBS?retryWrites=true&w=majority&appName=ClusterOwn", {
+//mongoose.connect("mongodb+srv://HBS_admin:HBS%40123@clusterown.wc7a6xv.mongodb.net/HBS?retryWrites=true&w=majority&appName=ClusterOwn", {
+//    useNewUrlParser: true,
+//    useUnifiedTopology: true,
+//})
+//    .then(() => {
+//        console.log("Successfully connected to MongoDB");
+//    })
+//    .catch((err) => {
+//        console.error("Failed to connect to MongoDB", err);
+//    });
+
+// MongoDB Connection
+mongoose.connect(process.env.MONGO_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
 })
-    .then(() => {
-        console.log("Successfully connected to MongoDB");
-    })
-    .catch((err) => {
-        console.error("Failed to connect to MongoDB", err);
-    });
+    .then(() => console.log("MongoDB connected"))
+    .catch(err => console.error("MongoDB connection error:", err));
+
+// Serve static files from React app
+app.use(express.static(path.join(__dirname, 'client/build')));
+
+// Define your API routes here
+
+// Catch-all handler for React routing
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
+});
 
 // Define User Schema and Model
 const userSchema = new mongoose.Schema({
