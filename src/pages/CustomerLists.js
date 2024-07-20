@@ -7,6 +7,7 @@ function CustomerLists() {
     const [customers, setCustomers] = useState([]);
     const [search, setSearch] = useState('');
     const navigate = useNavigate();
+    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
     useEffect(() => {
         fetchCustomers();
@@ -14,7 +15,7 @@ function CustomerLists() {
 
     const fetchCustomers = async () => {
         try {
-            const response = await axios.get(`http://localhost:5001/customers`, { params: { search } });
+            const response = await axios.get(`${API_BASE_URL}/customers`, { params: { search } });
             setCustomers(response.data);
         } catch (error) {
             console.error('There was an error fetching the customer data!', error);

@@ -27,6 +27,7 @@ function ProfileForm({ profileId }) {
     const user = JSON.parse(localStorage.getItem('user'));
     const loginId = user ? user._id : null;
     const loginName = user ? user.name : null;
+    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
     useEffect(() => {
         if (loginId) {
@@ -36,7 +37,7 @@ function ProfileForm({ profileId }) {
 
     const fetchProfile = async (userId) => {
         try {
-            const response = await axios.get(`http://localhost:5001/profile/${userId}`);
+            const response = await axios.get(`${API_BASE_URL}/profile/${userId}`);
             setProfile(response.data);
             setName(response.data.name);
             setPhoneNo(response.data.phoneNo);
@@ -49,7 +50,7 @@ function ProfileForm({ profileId }) {
 
     const handleOnSubmit = async (userId) => {
         try {
-            await axios.put(`http://localhost:5001/profileEdit/${userId}`, {
+            await axios.put(`${API_BASE_URL}/profileEdit/${userId}`, {
                 name,
                 phoneNo,
                 email,
@@ -82,14 +83,14 @@ function ProfileForm({ profileId }) {
 
         try {
             // Validate old password
-            const response = await axios.post(`http://localhost:5001/validatePassword`, {
+            const response = await axios.post(`${API_BASE_URL}/validatePassword`, {
                 userId: loginId,
                 oldPassword: oldPassword
             });
 
             if (response.data.valid) {
                 // Proceed to update password
-                await axios.put(`http://localhost:5001/changePassword/${loginId}`, {
+                await axios.put(`${API_BASE_URL}/changePassword/${loginId}`, {
                     password: password
                 });
                 alert("Password updated successfully");

@@ -15,10 +15,11 @@ const Reviews = () => {
     const user = JSON.parse(localStorage.getItem('user'));
     const loginId = user ? user._id : null;
     const loginName = user ? user.name : null;
+    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
     // Fetch reviews from the server
     const fetchReviews = async () => {
         try {
-            const response = await axios.get('http://localhost:5001/reviewsList');
+            const response = await axios.get(`${API_BASE_URL}/reviewsList`);
             setReviews(response.data);
         } catch (error) {
             console.error('Error fetching reviews:', error);
@@ -31,7 +32,7 @@ const Reviews = () => {
 
     const handleSubmit = async () => {
         try {
-            const response = await axios.post('http://localhost:5001/addReview', {
+            const response = await axios.post(`${API_BASE_URL}/addReview`, {
                 feedback,
                 loginId
             });

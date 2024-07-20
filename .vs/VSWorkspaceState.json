@@ -4,11 +4,9 @@
     "\\public",
     "\\src",
     "\\src\\assets",
-    "\\src\\assets\\images",
-    "\\src\\assets\\models",
-    "\\src\\assets\\styles",
-    "\\src\\pages"
+    "\\src\\pages",
+    "\\src\\services"
   ],
-  "SelectedNode": "\\src\\assets\\styles\\profile.css",
+  "SelectedNode": "\\src\\pages\\AppListByCust.js",
   "PreviewInSolutionExplorer": false
 }

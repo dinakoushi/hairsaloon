@@ -1,12 +1,12 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:5001';
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
 const ProductAPI = {
     getUrl: (endpoint = '') => `${API_BASE_URL}/${endpoint}`,
 
     getFullUrl: (filePath = '') => {
-        const baseUrl = 'http://localhost:5001';
+        const baseUrl = `${API_BASE_URL}`;
         return `${baseUrl}/${filePath}`;
     },
 

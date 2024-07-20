@@ -8,13 +8,15 @@ export default function Login() {
     const { register, handleSubmit, formState: { errors } } = useForm();
     const navigate = useNavigate();
     const { login } = useAuth();
+    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+
     useEffect(() => {
         // Clear local storage when the login component mounts
         localStorage.clear();
     }, []);
     const onLoginClick = async (data) => {
         try {
-            const response = await fetch('http://localhost:5001/login', {
+            const response = await fetch(`${API_BASE_URL}/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

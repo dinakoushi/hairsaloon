@@ -12,10 +12,11 @@ function Register() {
     const [role, setRole] = useState("Customer");
     const [verifyPassword, setVerifyPassword] = useState("");
     const navigate = useNavigate();
+    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
     const handleOnSubmit = async () => {
         try {
-            const response = await axios.post('http://localhost:5001/register', {
+            const response = await axios.post(`${API_BASE_URL}/register`, {
                 name,
                 phoneNo,
                 email,

@@ -26,13 +26,15 @@ function AppListByCust() {
     const role = user ? user.role : null;
     const loginName = user ? user.name : null;
 
+    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+
     useEffect(() => {
         fetchBookings();
     }, [customerId]);
 
     const fetchBookings = async () => {
         try {
-            const response = await axios.get(`http://localhost:5001/bookings/${customerId}`);
+            const response = await axios.get(`${API_BASE_URL}/bookings/${customerId}`);
             setBookings(response.data);
         } catch (error) {
             console.error('There was an error fetching the booking data!', error);
@@ -57,7 +59,7 @@ function AppListByCust() {
         setIsSubmitting(true);
 
         try {
-            const response = await axios.post('http://localhost:5001/updateProgress', formData, {
+            const response = await axios.post(`${API_BASE_URL}/updateProgress`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
@@ -81,7 +83,7 @@ function AppListByCust() {
 
     const fetchAppointmentDetails = async (appointmentId) => {
         try {
-            const response = await axios.post('http://localhost:5001/appointments/details', { appointmentId });
+            const response = await axios.post(`${API_BASE_URL}/appointments/details`, { appointmentId });
             setSelectedAppointment(response.data);
         } catch (error) {
             console.error('There was an error fetching the appointment details!', error);

@@ -28,6 +28,8 @@ function BookingDate() {
     const loginId = user ? user._id : null;
     const loginName = user ? user.name : null;
 
+    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+
     const minDate = new Date();
     const maxDate = new Date();
     maxDate.setDate(minDate.getDate() + 1); 
@@ -43,7 +45,7 @@ function BookingDate() {
 
     const fetchServices = async () => {
         try {
-            const response = await axios.get('http://localhost:5001/services');
+            const response = await axios.get(`${API_BASE_URL}/services`);
             setServices(response.data);
         } catch (error) {
             console.error('Error fetching services:', error);
@@ -52,7 +54,7 @@ function BookingDate() {
 
     const fetchStaff = async () => {
         try {
-            const response = await axios.get('http://localhost:5001/staff');
+            const response = await axios.get(`${API_BASE_URL}/staff`);
             setStaff(response.data);
         } catch (error) {
             console.error('Error fetching staff:', error);
@@ -62,7 +64,7 @@ function BookingDate() {
     const fetchProfile = async (userId) => {
         console.log(`Fetching profile for user ID: ${userId}`);
         try {
-            const response = await axios.get(`http://localhost:5001/profile/${userId}`);
+            const response = await axios.get(`${API_BASE_URL}/profile/${userId}`);
             setProfile(response.data);
         } catch (error) {
             console.error('Error fetching profile:', error);
@@ -71,7 +73,7 @@ function BookingDate() {
 
     const fetchBookedSlots = async (date, staffID) => {
         try {
-            const response = await axios.get('http://localhost:5001/bookedSlots', { params: { date, staffID } });
+            const response = await axios.get(`${API_BASE_URL}/bookedSlots`, { params: { date, staffID } });
             setBookedSlots(response.data);
         } catch (error) {
             console.error('Error fetching booked slots:', error);
@@ -97,7 +99,7 @@ function BookingDate() {
         }
 
         try {
-            const response = await axios.post('http://localhost:5001/book', {
+            const response = await axios.post(`${API_BASE_URL}/book`, {
                 userId: loginId,
                 date: formatDateToString(selectedDate),
                 serviceCode: selectedService.servicesCode,

@@ -5,6 +5,7 @@ import '@fortawesome/fontawesome-free/css/all.min.css';
 
 function ReviewBooking() {
     const [appointments, setAppointments] = useState([]);
+    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
     useEffect(() => {
         fetchPendingAppointments();
@@ -12,7 +13,7 @@ function ReviewBooking() {
 
     const fetchPendingAppointments = async () => {
         try {
-            const response = await axios.get('http://localhost:5001/appointments/pendingBooking');
+            const response = await axios.get(`${API_BASE_URL}/appointments/pendingBooking`);
             setAppointments(response.data);
         } catch (error) {
             console.error('Error fetching pending appointments:', error);
@@ -21,7 +22,7 @@ function ReviewBooking() {
 
     const handleStatusUpdate = async (id, status) => {
         try {
-            const response = await axios.put(`http://localhost:5001/appointments/${id}/status`, { status });
+            const response = await axios.put(`${API_BASE_URL}/appointments/${id}/status`, { status });
             alert("Appointment " + status+" !");
             fetchPendingAppointments(); // Refresh the list after updating the status
         } catch (error) {
