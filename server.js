@@ -8,9 +8,11 @@ const PORT = process.env.PORT || 5001;
 const fs = require('fs');
 
 // Middleware
-app.use(cors());
+//app.use(cors());
 app.use(express.json());
-
+app.use(cors({
+    origin: 'https://hairsaloon-38sl.onrender.com'
+}));
 // MongoDB Connection
 //mongoose.connect("mongodb+srv://HBS_admin:HBS%40123@clusterown.wc7a6xv.mongodb.net/HBS?retryWrites=true&w=majority&appName=ClusterOwn", {
 //    useNewUrlParser: true,

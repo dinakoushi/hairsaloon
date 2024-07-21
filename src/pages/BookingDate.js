@@ -45,12 +45,7 @@ function BookingDate() {
 
     const fetchServices = async () => {
         try {
-            const response = await fetch(`${API_BASE_URL}/services`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
+            const response = await axios.get(`${API_BASE_URL}/services`);
             setServices(response.data);
         } catch (error) {
             console.error('Error fetching services:', error);
