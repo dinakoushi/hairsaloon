@@ -327,7 +327,7 @@ app.get('/appointments/pendingBooking', async (req, res) => {
                     date: appointment.date,
                     serviceCode: appointment.serviceCode,
                     serviceDesc: appointment.serviceDesc,
-                    time: appointment.startTime,
+                    startTime: appointment.startTime,
                     bookedAt: appointment.bookedAt,
                     status: appointment.status,
                     userDetails: user ? {
