@@ -51,7 +51,7 @@ function ReviewBooking() {
                     <div className="appointment-list">
                         {appointments.map(appointment => (
                             <div className="appointment-item" key={appointment.appointmentId}>
-                                <p className="detailsBooked">{appointment.userDetails.name} has made an appointment for {appointment.serviceDesc} on {appointment.date}, {appointment.time}</p>
+                                <p className="detailsBooked">{appointment.userDetails.name} has made an appointment for {appointment.serviceDesc} on {appointment.date}, {appointment.startTime}</p>
                                 <div className="actions">
                                     <button onClick={() => handleStatusUpdate(appointment.appointmentId, 'Approved')}>Accept</button>
                                     <button onClick={() => handleStatusUpdate(appointment.appointmentId, 'Rejected')}>Reject</button>
