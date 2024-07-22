@@ -6,7 +6,10 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 5001;
 const fs = require('fs');
+const cloudinary = require('cloudinary').v2;
+require('dotenv').config();
 
+const { v4: uuidv4 } = require('uuid');
 // Middleware
 //app.use(cors());
 app.use(express.json());
@@ -26,23 +29,22 @@ app.use(cors({
 //    });
 
 // MongoDB Connection
-mongoose.connect(process.env.MONGO_URI, {
+mongoose.connect("mongodb+srv://HBS_admin:HBS%40123@clusterown.wc7a6xv.mongodb.net/HBS?retryWrites=true&w=majority&appName=ClusterOwn", {
     useNewUrlParser: true,
     useUnifiedTopology: true,
 })
     .then(() => console.log("MongoDB connected"))
     .catch(err => console.error("MongoDB connection error:", err));
 
-//// Serve static files from React app
-//app.use(express.static(path.join(__dirname, 'client/build')));
+cloudinary.config({
+    cloud_name: process.env.CLOUD_NAME,
+    api_key: process.env.API_KEY,
+    api_secret: process.env.API_SECRET,
+});
 
-//// Define your API routes here
+const storage = multer.memoryStorage();
 
-//// Catch-all handler for React routing
-//app.get('*', (req, res) => {
-//    res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
-//});
-
+const upload = multer({ storage: storage });
 // Define User Schema and Model
 const userSchema = new mongoose.Schema({
     name: String,
@@ -102,34 +104,11 @@ const progressSchema = new mongoose.Schema({
     remark: String,
     appointmentId: String,
     filePath: String,  // Path or URL to the uploaded file
+    imageId:String,
     createdAt: { type: Date, default: Date.now }
 });
 
 const progress = mongoose.model('progressTreatment', progressSchema);
-
-//Upload Process
-const uploadDir = path.join('public', 'uploads');
-
-// Ensure the uploads directory exist
-if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true });
-}
-
-// Configure Multer storage
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, uploadDir); 
-    },
-    filename: (req, file, cb) => {
-        cb(null, `${Date.now()}-${file.originalname}`);
-    }
-});
-
-// Configure Multer with limits and storage settings
-const upload = multer({
-    storage,
-    limits: { fileSize: 5 * 1024 * 1024 } 
-});
 
 // Register Route
 app.post("/register", async (req, res) => {
@@ -434,7 +413,8 @@ app.post('/api/progress/:appointmentId', upload.single('image'), async (req, res
         const newProgress = {
             appointmentId,
             description,
-            image: req.file ? req.file.path.replace('public', '') : null
+            filePath: req.file.path,
+            imageId: req.file.filename,
         };
 
         // Save newProgress to your database (e.g., MongoDB)
@@ -465,26 +445,33 @@ app.get('/staff', async (req, res) => {
 });
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.post('/updateProgress', upload.single('file'), async (req, res) => {
+app.post('/updateProgress', upload.single('file'), (req, res) => {
     const { remark, appointmentId } = req.body;
-    const file = req.file;
+    cloudinary.uploader.upload_stream({
+        folder: 'HudaHairSalon',
+        public_id: uuidv4(),
+    }, async (error, result) => {
+        if (result) {
+            console.error('remark:', remark);
+            // Save image details to MongoDB
+            const newProgress = new progress({
+                remark,
+                appointmentId,
+                filePath: result.secure_url,
+                imageId: result.public_id,
+            });
 
-    // Create a new progress record
-    const newProgress = new progress({
-        remark,
-        appointmentId,
-        filePath: file ? file.path : null // Save the file path
-    });
-
-    try {
-        await newProgress.save();
-        res.json({ message: 'Data saved successfully', progress: newProgress });
-    } catch (error) {
-        console.error('Error saving progress:', error);
-        res.status(500).json({ message: 'Failed to save progress', error });
-    }
+            try {
+                await newProgress.save();
+                res.json({ message: 'Data saved successfully', progress: newProgress });
+            } catch (err) {
+                res.status(500).json({ error: err.message });
+            }
+        } else {
+            res.status(500).json({ error: error.message });
+        }
+    }).end(req.file.buffer);
 });
-
 // Define a POST route to fetch appointment details by ID
 app.post('/appointments/details', async (req, res) => {
     try {
@@ -494,7 +481,7 @@ app.post('/appointments/details', async (req, res) => {
             return res.status(400).json({ error: 'Appointment ID is required.' });
         }
 
-        console.error('appointmentId:', appointmentId);
+        
         const appointment = await progress.findOne({ appointmentId }).exec();;
 
         if (!appointment) {

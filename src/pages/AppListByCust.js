@@ -109,10 +109,10 @@ function AppListByCust() {
     }
 
     // Function to get the full URL for the image
-    const getFullImageUrl = (filePath) => {
-        if (!filePath) return '';
-        return `/${filePath.replace('public\\', '').replace('public/', '').replace(/\\/g, '/')}`;
-    };
+    //const getFullImageUrl = (filePath) => {
+    //    if (!filePath) return '';
+    //    return `/${filePath.replace('public\\', '').replace('public/', '').replace(/\\/g, '/')}`;
+    //};
 
     return (
         <>
@@ -224,7 +224,7 @@ function AppListByCust() {
                                     <div className="view-image">
                                         <img
                                             className="uploadImage"
-                                            src={getFullImageUrl(selectedAppointment.filePath)}
+                                            src={selectedAppointment.filePath}
                                             alt="Progress"
                                         />
                                         <p className="remark">
